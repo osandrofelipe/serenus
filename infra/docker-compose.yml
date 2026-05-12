@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  # PostgreSQL local
+  postgres:
+    image: postgres:16-alpine
+    container_name: serenus_db
+    environment:
+      POSTGRES_DB: serenus
+      POSTGRES_USER: serenus_user
+      POSTGRES_PASSWORD: serenus_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U serenus_user -d serenus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis (cache e filas futuras)
+  redis:
+    image: redis:7-alpine
+    container_name: serenus_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1
+    volumes:
+      - redisdata:/data
+
+  # Backend API
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: serenus_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://serenus_user:serenus_pass@postgres:5432/serenus
+      JWT_SECRET: dev_secret_troque_em_producao_1234567890abcdef
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: serenus_web
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+volumes:
+  pgdata:
+  redisdata:

@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #FBF8F3;
+  --cream2: #F4EFE6;
+  --cream3: #EAE3D6;
+  --brown: #3D2B1F;
+  --brown2: #6B4C3B;
+  --brown3: #A0785A;
+  --sage: #4A6741;
+  --sage2: #6B8F5E;
+  --sage3: #C5D9C0;
+  --sage4: #EAF0E8;
+  --gold: #C4962A;
+  --gold2: #E8B84B;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--brown); }
+
+.font-display { font-family: 'Fraunces', serif; }
+
+@layer components {
+  .btn-primary {
+    @apply bg-[#3D2B1F] text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-[#6B4C3B] transition-colors;
+  }
+  .btn-sage {
+    @apply bg-[#4A6741] text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-[#6B8F5E] transition-colors;
+  }
+  .btn-outline {
+    @apply border border-[#EAE3D6] text-[#6B4C3B] px-5 py-2.5 rounded-lg font-medium text-sm hover:border-[#A0785A] transition-colors;
+  }
+  .form-input {
+    @apply w-full px-3.5 py-2.5 border border-[#EAE3D6] rounded-lg text-sm text-[#3D2B1F] bg-[#FBF8F3] focus:outline-none focus:border-[#6B8F5E] focus:bg-white transition-colors;
+  }
+  .card {
+    @apply bg-white border border-[#EAE3D6] rounded-2xl;
+  }
+}
