@@ -23,11 +23,18 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL,
-    'http://localhost:3000',
-    'http://localhost:5173',
-  ].filter(Boolean),
+  origin: function(origin, callback) {
+    const allowed = [
+      process.env.FRONTEND_URL,
+      process.env.FRONTEND_URL_2,
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ].filter(Boolean);
+    if (!origin) return callback(null, true);
+    if (allowed.includes(origin)) return callback(null, true);
+    console.warn('CORS bloqueado para origem:', origin);
+    callback(new Error('Origem nao permitida pelo CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
